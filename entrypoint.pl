@@ -23,7 +23,7 @@ unless (getpwuid("$uid")){
 }
 
 my $conf="/rsyncd/conf/rsyncd.conf";
-my $pass="/rsyncd/conf/passwd";
+my $pass="/rsyncd/conf/rsyncd.pass";
 system("cp", "/etc/rsyncd.conf", "$conf") unless ( -f $conf );
 system("cp", "/etc/rsyncd.pass", "$pass") unless ( -f $pass );
 
