@@ -23,7 +23,14 @@ unless (getpwuid("$uid")){
 }
 
 my $conf="/rsyncd/conf/rsyncd.conf";
+my $pass="/rsyncd/conf/passwd";
 system("cp", "/etc/rsyncd.conf", "$conf") unless ( -f $conf );
+system("cp", "/etc/rsyncd.pass", "$pass") unless ( -f $pass );
+
+if( -f $pass ){
+  system("chmod", "640",    $conf, $pass);
+  system("chgrp", "docker", $conf, $pass);
+}
 
 mkdir("/var/run/rsyncd") unless (-d "/var/run/rsyncd");
 my @dirs = ("/var/run/rsyncd","/rsyncd/logs","/rsyncd/data");
@@ -32,6 +39,9 @@ foreach my $dir (@dirs) {
     system("chown", "docker.docker", "$dir");
   }
 }
+
+my $pid="/var/run/rsyncd/pid";
+unlink("$pid") if ( -f "$pid");
 
 #system("rm", "-f", "/run/crond.pid") if ( -f "/run/crond.pid" );
 #system("/usr/sbin/cron");
