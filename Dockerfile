@@ -15,9 +15,9 @@ RUN export http_proxy="http://172.17.42.1:8080/" \
     && rm -rf usr/share/info   \
     && find var/lib/apt -type f -exec rm -fv {} \;
 
+ADD ./conf/         /etc/
+ADD ./conf/         /rsyncd/conf/
 ADD ./entrypoint.pl /entrypoint.pl
-ADD ./conf/ /etc/
-ADD ./conf/ /rsyncd/conf/
 
 ENTRYPOINT ["/entrypoint.pl"]
 CMD        ["/usr/bin/rsync", "--daemon", "--no-detach", "--config=/rsyncd/conf/rsyncd.conf"]

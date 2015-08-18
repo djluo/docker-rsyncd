@@ -43,18 +43,23 @@ foreach my $dir (@dirs) {
 my $pid="/var/run/rsyncd/pid";
 unlink("$pid") if ( -f "$pid");
 
-#system("rm", "-f", "/run/crond.pid") if ( -f "/run/crond.pid" );
-#system("/usr/sbin/cron");
-#
-#my $min  = int(rand(60));
-#my $hour = int(rand(5));
-#
-#my $min2 = $min;
-#$min2 = $min - 3 if $min > 3;
-#
-#open (CRON,"|/usr/bin/crontab") or die "crontab error?";
-#print CRON ("$min2 $hour * * * (/mysql/xtrab.sh delete >/mysql/backup/stdout.log 2>/mysql/backup/stderr.log)\n");
-#close(CRON);
+if( $ENV{'RSYNC_PASSWORD'} ){
+  my $ip=$ENV{'backup_ip'};
+  my $dest=$ENV{'backup_dest'}."_".$ENV{'HOSTNAME'};
+
+  system("rm", "-f", "/run/crond.pid") if ( -f "/run/crond.pid" );
+  system("/usr/sbin/cron");
+
+  my $min  = int(rand(60));
+  my $hour = int(rand(5));
+
+  my $min2 = $min;
+  $min2 = $min - 3 if $min > 3;
+
+  open (CRON,"|/usr/bin/crontab") or die "crontab error?";
+  print CRON ("$min2 $hour * * * (/usr/bin/rsync --del --port=2873 -al /rsyncd/data/ docker@". $ip ."::backup/$dest/)\n");
+  close(CRON);
+}
 
 # 切换当前运行用户,先切GID.
 #$GID = $EGID = $gid;
