@@ -41,6 +41,9 @@ _run() {
     -e "TZ=Asia/Shanghai"     \
     -e "User_Id=${User_Id}"   \
     -w "/rsyncd/"             \
+    -e "RSYNC_PASSWORD=docker" \
+    -e "backup_dest=$name"     \
+    -e "backup_ip=172.17.42.1" \
     -v ${current_dir}/logs/:/rsyncd/logs/ \
     -v ${current_dir}/conf/:/rsyncd/conf/ \
     -v ${current_dir}/data/:/rsyncd/data/ \
