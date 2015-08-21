@@ -47,6 +47,17 @@ if( $ENV{'RSYNC_PASSWORD'} ){
   my $ip=$ENV{'backup_ip'};
   my $dest=$ENV{'backup_dest'}."_".$ENV{'HOSTNAME'};
 
+  my $port="2873";
+  $port="$ENV{'RSYNC_PORT'}" if ( $ENV{'RSYNC_PORT'} );
+  my $rsync_opts = "/usr/bin/rsync --del --port=$port -al --password-file=/rsync.pass";
+
+  my $umask = umask;
+  umask 0277;
+  open (PW,'>', '/rsync.pass') or die "$!";
+  print PW $ENV{'RSYNC_PASSWORD'};
+  close(PW);
+  umask $umask;
+
   system("rm", "-f", "/run/crond.pid") if ( -f "/run/crond.pid" );
   system("/usr/sbin/cron");
 
@@ -57,7 +68,7 @@ if( $ENV{'RSYNC_PASSWORD'} ){
   $min2 = $min - 3 if $min > 3;
 
   open (CRON,"|/usr/bin/crontab") or die "crontab error?";
-  print CRON ("$min2 $hour * * * (/usr/bin/rsync --del --port=2873 -al /rsyncd/data/ docker@". $ip ."::backup/$dest/)\n");
+  print CRON ("$min2 $hour * * * ($rsync_opts /rsyncd/data/ docker@". $ip ."::backup/$dest/)\n");
   close(CRON);
 }
 
