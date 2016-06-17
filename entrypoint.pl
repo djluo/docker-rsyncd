@@ -11,10 +11,12 @@
 # 最终: 使用perl脚本进行添加和切换操作. 从环境变量User_Id获取用户信息.
 
 use strict;
+use Cwd;
 #use English '-no_match_vars';
 
 my $uid = 1000;
 my $gid = 1000;
+my $pwd = cwd();
 
 $uid = $gid = $ENV{'User_Id'} if $ENV{'User_Id'} =~ /\d+/;
 
